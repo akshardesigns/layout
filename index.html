@@ -1047,10 +1047,12 @@ window.addEventListener('DOMContentLoaded', () => {
   // scale
   function scalePoster(){
   const wrapper = document.getElementById('posterWrapper');
-  const scale = Math.min((window.innerWidth - 32)/1080, 1);
+
+  const maxWidth = window.innerWidth - 32; // padding kiri kanan
+  const scale = Math.min(maxWidth / 1080, 1); // max 1 (biar desktop gak gede banget)
 
   wrapper.style.transform = `scale(${scale})`;
-  wrapper.style.transform0rigin = 'top center';
+  wrapper.style.transformOrigin = 'top center';
 }
 
  // download
