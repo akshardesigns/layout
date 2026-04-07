@@ -985,17 +985,33 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // layout switch
   document.getElementById('layoutSelect').addEventListener('change', (e) => {
-    const layout = e.target.value;
-    currentLayout = layout;
+  const layout = e.target.value;
+  currentLayout = layout;
 
-    const canvas = document.getElementById('posterCanvas');
-    canvas.className = 'poster-canvas rounded-2xl shadow-2xl';
+  const canvas = document.getElementById('posterCanvas');
+  canvas.className = 'poster-canvas rounded-2xl shadow-2xl';
 
-    if(layout !== '1'){
-      canvas.classList.add(`layout-${layout}`);
-    }
-  });
+  if (layout !== '1') {
+    canvas.classList.add(`layout-${layout}`);
+  }
 
+  // 🔥 ambil element
+  const left = document.getElementById('p_side_image_left');
+  const right = document.getElementById('p_side_image_right');
+
+  // 🔥 reset dulu
+  left.style.display = 'none';
+  right.style.display = 'none';
+
+  // 🔥 hanya tampil di layout 6 & 7
+  if ((layout === '6' || layout === '7') && lastUploadedImage) {
+    left.src = lastUploadedImage;
+    right.src = lastUploadedImage;
+
+    left.style.display = 'block';
+    right.style.display = 'block';
+  }
+});
   // text binding
   const bind = (inputId, posterId) => {
     document.getElementById(inputId).addEventListener('input', e=>{
@@ -1035,9 +1051,11 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   setupUpload('drop_visual','file_visual','visual_label',(dataUrl)=>{
-    document.getElementById('p_hero').innerHTML =
-      `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover">`;
-  });
+  lastUploadedImage = dataUrl;
+
+  document.getElementById('p_hero').innerHTML =
+    `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover">`;
+});
 
   setupUpload('drop_logo','file_logo','logo_label',(dataUrl)=>{
     document.getElementById('p_brand').innerHTML =
