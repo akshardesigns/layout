@@ -1047,9 +1047,10 @@ window.addEventListener('DOMContentLoaded', () => {
   // scale
   function scalePoster(){
   const wrapper = document.getElementById('posterWrapper');
-  const scale = Math.min((window.innerWidth - 48)/1080, 0.55);
+  const scale = Math.min((window.innerWidth - 32)/1080, 1);
 
   wrapper.style.transform = `scale(${scale})`;
+  wrapper.style.transform0rigin = 'top center';
 }
 
  // download
