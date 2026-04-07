@@ -983,34 +983,18 @@ window.addEventListener('DOMContentLoaded', () => {
   let currentLayout = '1';
   let lastUploadedImage = null;
 
-// layout switch
-document.getElementById('layoutSelect').addEventListener('change', (e) => {
-  const layout = e.target.value;
-  currentLayout = layout;
+  // layout switch
+  document.getElementById('layoutSelect').addEventListener('change', (e) => {
+    const layout = e.target.value;
+    currentLayout = layout;
 
-  const canvas = document.getElementById('posterCanvas');
-  canvas.className = 'poster-canvas rounded-2xl shadow-2xl';
+    const canvas = document.getElementById('posterCanvas');
+    canvas.className = 'poster-canvas rounded-2xl shadow-2xl';
 
-  if (layout !== '1') {
-    canvas.classList.add(`layout-${layout}`);
-  }
-
-  // 🔥 RESET SIDE IMAGE
-  const left = document.getElementById('p_side_image_left');
-  const right = document.getElementById('p_side_image_right');
-
-  left.style.display = 'none';
-  right.style.display = 'none';
-
-  // 🔥 TAMPILKAN KHUSUS LAYOUT 6 & 7
-  if ((layout === '6' || layout === '7') && lastUploadedImage) {
-    left.src = lastUploadedImage;
-    right.src = lastUploadedImage;
-
-    left.style.display = 'block';
-    right.style.display = 'block';
-  }
-});
+    if(layout !== '1'){
+      canvas.classList.add(`layout-${layout}`);
+    }
+  });
 
   // text binding
   const bind = (inputId, posterId) => {
@@ -1051,16 +1035,8 @@ document.getElementById('layoutSelect').addEventListener('change', (e) => {
   }
 
   setupUpload('drop_visual','file_visual','visual_label',(dataUrl)=>{
-  lastUploadedImage = dataUrl;
-
-  // hero (layout biasa)
-  document.getElementById('p_hero').innerHTML =
-    `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover">`;
-
-  // 🔥 isi side image juga
-  document.getElementById('p_side_image_left').src = dataUrl;
-  document.getElementById('p_side_image_right').src = dataUrl;
-});
+    document.getElementById('p_hero').innerHTML =
+      `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover">`;
   });
 
   setupUpload('drop_logo','file_logo','logo_label',(dataUrl)=>{
