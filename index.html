@@ -843,14 +843,22 @@
       bottom: auto;
       right: 40px;
     }
-    #posterContainer {
-  width: 100%;
-  max-width: 360px; /* 🔥 ini bikin preview kecil */
-  margin: 0 auto;
+    #posterWrapper {
+  transform-origin: top center;
+  width: 1080px;        /* pastikan ini ada */
 }
 
-#posterWrapper {
-  transform-origin: top center;
+#posterContainer {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* 🔥 INI YANG PENTING BANGET */
+.poster-wrapper {
+  display: flex;
+  justify-content: center;
 }
     .drop-zone {
       border: 2px dashed #e5e7eb;
