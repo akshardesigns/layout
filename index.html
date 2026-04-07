@@ -843,11 +843,15 @@
       bottom: auto;
       right: 40px;
     }
-    #posterWrapper {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
+    #posterContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+#posterWrapper {
+  transform-origin: top center;
+}
     .drop-zone {
       border: 2px dashed #e5e7eb;
       transition: all 0.2s;
@@ -937,10 +941,11 @@
      </div>
     </div>
    </div><!-- Live Preview -->
-   <div class="py-10 flex justify-center">
+<div class="py-10 flex justify-center">
+  <div id="posterContainer">
     <div class="poster-wrapper" id="posterWrapper">
-     <div class="poster-canvas rounded-2xl shadow-2xl" id="posterCanvas" style="background:#FFFFFF;"><!-- Headline BG -->
-      <div class="headline-bg" id="p_headline" style="color:#C8553D;">
+      <div class="poster-canvas rounded-2xl shadow-2xl" id="posterCanvas" style="background:#FFFFFF;"><!-- Headline BG -->
+        <div class="headline-bg" id="p_headline" style="color:#C8553D;">
        BEYOND THE EDGE
       </div><!-- Hero Image -->
       <div class="hero-image-area" id="p_hero">
@@ -973,10 +978,10 @@
       </div><!-- Layout 7: Top right line -->
       <div class="top-right-line"></div><!-- Layout 8: Bottom anchor line -->
       <div class="layout-8-anchor-line" id="p_layout8_line"></div>
-     </div>
-    </div>
-   </div>
-  </div>
+     </div> <!-- posterCanvas -->
+</div> <!-- posterWrapper -->
+</div> <!-- posterContainer -->
+</div>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
 
@@ -1045,14 +1050,13 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // scale
-  function scalePoster(){
+ function scalePoster(){
   const wrapper = document.getElementById('posterWrapper');
+  const container = document.getElementById('posterContainer');
 
-  const maxWidth = window.innerWidth - 32; // padding kiri kanan
-  const scale = Math.min(maxWidth / 1080, 1); // max 1 (biar desktop gak gede banget)
+  const scale = container.offsetWidth / 1080;
 
   wrapper.style.transform = `scale(${scale})`;
-  wrapper.style.transformOrigin = 'top center';
 }
 
  // download
