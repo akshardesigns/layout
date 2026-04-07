@@ -978,36 +978,6 @@
    </div>
   </div>
   <script>
-    // --- Element SDK ---
-    const defaultConfig = {
-      app_title: 'Layout System Generator',
-      background_color: '#0F0F0F',
-      accent_color: '#C8553D',
-      text_color: '#ffffff',
-      surface_color: '#1a1a1a',
-      muted_color: '#666666',
-      font_family: 'Playfair Display',
-      font_size: 16
-    };
-
-    function applyConfig(config) {
-      const t = document.getElementById('app-title');
-      if (t) t.textContent = config.app_title || defaultConfig.app_title;
-    }
-
-    window.elementSdk.init({
-      defaultConfig,
-      onConfigChange: async (config) => applyConfig(config),
-      mapToCapabilities: (config) => ({
-        recolorables: [],
-        borderables: [],
-        fontEditable: undefined,
-        fontSizeable: undefined
-      }),
-      mapToEditPanelValues: (config) => new Map([
-        ['app_title', config.app_title || defaultConfig.app_title]
-      ])
-    });
 
     // --- Layout switching ---
     let currentLayout = '1';
