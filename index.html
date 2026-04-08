@@ -1219,14 +1219,16 @@ if(downloadBtn){
     `;
     lucide.createIcons();
 
-  });
-}
- </script>
-  <div id="renderArea" style="
-   position: fixed;
-   left: -9999px;
-   top: 0;
-   z-index: -1;
- "></div>
-  </body>  
- </html>  
+}); // ✅ WAJIB ADA (penutup DOMContentLoaded)
+
+</script>
+
+<div id="renderArea" style="
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  z-index: -1;
+"></div>
+
+</body>
+</html>
