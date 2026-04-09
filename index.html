@@ -931,6 +931,28 @@
     }  
     input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }  
     input[type="color"]::-webkit-color-swatch { border: 2px solid rgba(255,255,255,0.2); border-radius: 6px; }  
+  .layout-item {
+  min-width: 64px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 11px;
+  font-weight: 600;
+  background: white;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  transition: all 0.2s;
+}
+
+.layout-item.active {
+  background: #111827;
+  color: white;
+  border-color: #111827;
+}
+
+#layoutSlider::-webkit-scrollbar {
+  display: none;
+}
   </style>  
   <style>body { box-sizing: border-box; }</style>  
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>  
@@ -950,19 +972,6 @@
     Download PNG  
   </button>  
   
-  <select id="layoutSelect" class="px-3 py-2 rounded-lg text-[11px] font-semibold border border-neutral-300 bg-white text-neutral-900 hover:border-neutral-400 transition-colors cursor-pointer">  
-    <option value="1">Layout 1</option>  
-    <option value="2">Layout 2</option>  
-    <option value="3">Layout 3</option>  
-    <option value="4">Layout 4</option>  
-    <option value="5">Layout 5</option>  
-    <option value="6">Layout 6</option>  
-    <option value="7">Layout 7</option>  
-    <option value="8">Layout 8</option>  
-    <option value="9">Layout 9</option>  
-  </select>  
-  
-</div>  
    </div><!-- Input Fields -->  
    <div class="px-6 py-6 border-b border-white/5">  
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-[1200px] mx-auto">  
@@ -991,6 +1000,22 @@
       </div><input type="file" id="file_logo" accept="image/*" class="hidden">  
      </div>  
     </div>  
+    <!-- Layout Slider -->
+<div class="pt-6">
+  <div id="layoutSlider" class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scroll-smooth">
+
+    <button class="layout-item active" data-layout="1">L1</button>
+    <button class="layout-item" data-layout="2">L2</button>
+    <button class="layout-item" data-layout="3">L3</button>
+    <button class="layout-item" data-layout="4">L4</button>
+    <button class="layout-item" data-layout="5">L5</button>
+    <button class="layout-item" data-layout="6">L6</button>
+    <button class="layout-item" data-layout="7">L7</button>
+    <button class="layout-item" data-layout="8">L8</button>
+    <button class="layout-item" data-layout="9">L9</button>
+
+  </div>
+</div>
    </div><!-- Live Preview -->  
    <div class="py-10 flex justify-center">  
     <div class="poster-wrapper" id="posterWrapper">  
@@ -1050,35 +1075,41 @@ window.addEventListener('DOMContentLoaded', () => {
   let currentLayout = '1';  
   let lastUploadedImage = null;  
   
-  // layout switch  
-  document.getElementById('layoutSelect').addEventListener('change', (e) => {  
-  const layout = e.target.value;  
-  currentLayout = layout;  
-  
-  const canvas = document.getElementById('posterCanvas');  
-  canvas.className = 'poster-canvas rounded-2xl shadow-2xl';  
-  
-  if (layout !== '1') {  
-    canvas.classList.add(`layout-${layout}`);  
-  }  
-  
-  // 🔥 ambil element  
-  const left = document.getElementById('p_side_image_left');  
-  const right = document.getElementById('p_side_image_right');  
-  
-  // 🔥 reset dulu  
-left.parentElement.style.display = 'none';  
-right.parentElement.style.display = 'none';  
-  
-  // 🔥 hanya tampil di layout 6 & 7  
-  if ((layout === '6' || layout === '7') && lastUploadedImage) {  
-    left.src = lastUploadedImage;  
-    right.src = lastUploadedImage;  
-  
-    left.parentElement.style.display = 'block';  
-right.parentElement.style.display = 'block';  
-  }  
-});  
+  // 🔥 LAYOUT SLIDER (NEW)
+document.querySelectorAll('.layout-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+
+    const layout = btn.dataset.layout;
+    currentLayout = layout;
+
+    const canvas = document.getElementById('posterCanvas');
+    canvas.className = 'poster-canvas rounded-2xl shadow-2xl';
+
+    if (layout !== '1') {
+      canvas.classList.add(`layout-${layout}`);
+    }
+
+    // ACTIVE STATE
+    document.querySelectorAll('.layout-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // HANDLE IMAGE (layout 6 & 7)
+    const left = document.getElementById('p_side_image_left');
+    const right = document.getElementById('p_side_image_right');
+
+    left.parentElement.style.display = 'none';
+    right.parentElement.style.display = 'none';
+
+    if ((layout === '6' || layout === '7') && lastUploadedImage) {
+      left.src = lastUploadedImage;
+      right.src = lastUploadedImage;
+
+      left.parentElement.style.display = 'block';
+      right.parentElement.style.display = 'block';
+    }
+
+  });
+});
   // text binding  
   const bind = (inputId, posterId) => {  
     document.getElementById(inputId).addEventListener('input', e=>{  
