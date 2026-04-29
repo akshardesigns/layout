@@ -2,1876 +2,220 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GridFlow — Design Studio</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Grid Design Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-:root {
-  --bg: #0f0f11;
-  --surface: #18181c;
-  --surface2: #1f1f25;
-  --surface3: #26262e;
-  --border: #2e2e38;
-  --accent: #6ee7b7;
-  --accent2: #818cf8;
-  --accent3: #f472b6;
-  --text: #e2e2e8;
-  --text-muted: #6b6b78;
-  --text-dim: #3a3a46;
-  --danger: #f87171;
-  --warn: #fbbf24;
-  --sidebar-w: 260px;
-  --props-w: 240px;
-  --toolbar-h: 48px;
-  --radius: 6px;
+/* ONLY MODIFIED PARTS */
+
+:root{
+  --grid-line:red;
+  --grid-line-strong:red;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;}
+/* REMOVE TOAST UI */
+.toast{display:none!important}
 
-body{
-  font-family:'DM Sans',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  height:100vh;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  user-select:none;
-}
-
-/* ===== TOOLBAR ===== */
-#toolbar{
-  height:var(--toolbar-h);
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  padding:0 12px;
-  gap:4px;
-  flex-shrink:0;
-  z-index:100;
-}
-
-.logo{
-  font-family:'Space Mono',monospace;
-  font-size:13px;
-  font-weight:700;
-  color:var(--accent);
-  letter-spacing:-.5px;
-  margin-right:12px;
-  display:flex;align-items:center;gap:6px;
-}
-.logo-icon{
-  width:22px;height:22px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  border-radius:4px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;color:#000;font-weight:700;
-}
-
-.tb-sep{width:1px;height:24px;background:var(--border);margin:0 6px;}
-
-.tb-btn{
-  height:30px;min-width:30px;
-  background:transparent;
-  border:1px solid transparent;
-  border-radius:var(--radius);
-  color:var(--text-muted);
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:5px;
-  padding:0 8px;
-  font-family:'DM Sans',sans-serif;
-  font-size:12px;
-  transition:all .15s;
-  white-space:nowrap;
-}
-.tb-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border);}
-.tb-btn.active{background:var(--surface3);color:var(--accent);border-color:var(--accent2);}
-.tb-btn svg{flex-shrink:0;}
-
-.tb-group{display:flex;gap:2px;background:var(--surface2);border-radius:var(--radius);padding:2px;border:1px solid var(--border);}
-.tb-group .tb-btn{border:none;}
-.tb-group .tb-btn.active{background:var(--surface3);color:var(--accent);}
-
-.zoom-ctrl{
-  display:flex;align-items:center;gap:6px;
-  font-family:'Space Mono',monospace;
-  font-size:11px;
-  color:var(--text-muted);
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:0 8px;height:30px;
-}
-.zoom-ctrl input[type=range]{
-  width:80px;height:3px;
-  -webkit-appearance:none;
-  background:var(--border);
-  border-radius:2px;cursor:pointer;
-}
-.zoom-ctrl input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:12px;height:12px;
-  background:var(--accent);border-radius:50%;
-}
-
-.spacer{flex:1;}
-
-/* ===== LAYOUT ===== */
-#workspace{
+/* ADD TYPOGRAPHY CONTROL STYLE */
+.typo-row{display:flex;gap:6px;margin-top:6px}
+.typo-row select,.typo-row input{
   flex:1;
-  display:flex;
-  overflow:hidden;
-}
-
-/* ===== SIDEBAR ===== */
-#sidebar{
-  width:var(--sidebar-w);
-  background:var(--surface);
-  border-right:1px solid var(--border);
-  display:flex;
-  flex-direction:column;
-  flex-shrink:0;
-  overflow:hidden;
-}
-
-.sidebar-tabs{
-  display:flex;
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
-}
-.sidebar-tab{
-  flex:1;padding:9px 4px;
-  text-align:center;
-  font-size:11px;font-weight:500;
-  color:var(--text-muted);
-  cursor:pointer;
-  border-bottom:2px solid transparent;
-  transition:all .15s;
-  letter-spacing:.3px;
-}
-.sidebar-tab:hover{color:var(--text);}
-.sidebar-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
-
-.sidebar-panel{
-  flex:1;overflow-y:auto;overflow-x:hidden;
-  padding:10px;
-}
-.sidebar-panel::-webkit-scrollbar{width:4px;}
-.sidebar-panel::-webkit-scrollbar-track{background:transparent;}
-.sidebar-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-
-.panel-section{margin-bottom:16px;}
-.section-label{
-  font-size:10px;font-weight:600;
-  letter-spacing:.8px;text-transform:uppercase;
-  color:var(--text-muted);
-  margin-bottom:8px;padding:0 2px;
-}
-
-.btn{
-  width:100%;padding:8px 10px;
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  color:var(--text);
-  cursor:pointer;
-  font-family:'DM Sans',sans-serif;font-size:12px;
-  text-align:left;
-  display:flex;align-items:center;gap:8px;
-  transition:all .15s;
-  margin-bottom:4px;
-}
-.btn:hover{background:var(--surface3);border-color:var(--accent2);color:var(--accent);}
-.btn.primary{
-  background:linear-gradient(135deg,rgba(110,231,183,.15),rgba(129,140,248,.15));
-  border-color:var(--accent2);color:var(--accent);
-}
-.btn.primary:hover{background:linear-gradient(135deg,rgba(110,231,183,.25),rgba(129,140,248,.25));}
-.btn svg{flex-shrink:0;opacity:.7;}
-
-/* Preset artboards */
-.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
-.preset-btn{
-  padding:8px 6px;
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--radius);
-  color:var(--text-muted);
-  cursor:pointer;
-  font-size:10px;text-align:center;
-  transition:all .15s;
-}
-.preset-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--surface3);}
-.preset-name{font-weight:600;color:var(--text);font-size:11px;display:block;margin-bottom:2px;}
-
-/* Layer tree */
-.layer-item{
-  display:flex;align-items:center;gap:6px;
-  padding:5px 6px;
-  border-radius:var(--radius);
-  cursor:pointer;
-  font-size:12px;
-  transition:all .12s;
-  border:1px solid transparent;
-}
-.layer-item:hover{background:var(--surface2);}
-.layer-item.selected{background:rgba(129,140,248,.15);border-color:var(--accent2);color:var(--accent2);}
-.layer-item .layer-icon{
-  width:16px;height:16px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  opacity:.6;
-}
-.layer-item .layer-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.layer-item .layer-eye{
-  opacity:0;cursor:pointer;padding:2px;
-  transition:opacity .1s;
-}
-.layer-item:hover .layer-eye{opacity:.5;}
-.layer-item .layer-eye:hover{opacity:1;}
-
-/* ===== CANVAS AREA ===== */
-#canvas-area{
-  flex:1;
-  position:relative;
-  overflow:hidden;
-  background:var(--bg);
-  background-image:
-    radial-gradient(circle at 1px 1px, var(--text-dim) 1px, transparent 0);
-  background-size:24px 24px;
-  cursor:default;
-}
-
-/* dotted bg animation on load */
-#canvas-area::before{
-  content:'';
-  position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 50%, rgba(110,231,183,.04) 0%, transparent 70%);
-  pointer-events:none;
-}
-
-#viewport{
-  position:absolute;
-  transform-origin:0 0;
-  will-change:transform;
-}
-
-/* Artboard */
-.artboard{
-  position:absolute;
-  background:#fff;
-  box-shadow:0 8px 40px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3);
-  border-radius:2px;
-  overflow:hidden;
-}
-.artboard-label{
-  position:absolute;
-  top:-22px;left:0;
-  font-family:'Space Mono',monospace;
-  font-size:10px;color:var(--text-muted);
-  white-space:nowrap;pointer-events:none;
-}
-
-/* Grid overlay */
-.grid-overlay{
-  position:absolute;inset:0;
-  pointer-events:none;
-  z-index:1;
-}
-
-/* Column grid */
-.col-guide{
-  position:absolute;top:0;bottom:0;
-  background:rgba(129,140,248,.12);
-  border-left:1px solid rgba(129,140,248,.25);
-  border-right:1px solid rgba(129,140,248,.25);
-  pointer-events:none;
-}
-
-/* Baseline grid */
-.baseline{
-  position:absolute;left:0;right:0;height:1px;
-  background:rgba(244,114,182,.15);
-}
-
-/* Element */
-.el{
-  position:absolute;
-  border:1px solid rgba(0,0,0,.08);
-  background:#fff;
-  box-sizing:border-box;
-  cursor:move;
-  overflow:hidden;
-}
-.el.selected{outline:2px solid var(--accent2);outline-offset:1px;}
-.el.hovered{outline:1px solid rgba(129,140,248,.5);outline-offset:1px;}
-.el-content{
-  width:100%;height:100%;
-  padding:8px;
-  overflow:hidden;
-  font-family:'DM Sans',sans-serif;
-  font-size:14px;
-  line-height:1.5;
-  outline:none;
-}
-
-/* Resize handles */
-.handle{
-  position:absolute;
-  width:8px;height:8px;
-  background:var(--accent2);
-  border:1.5px solid #fff;
-  border-radius:2px;
-  cursor:se-resize;
-  z-index:10;
-  opacity:0;
-  transition:opacity .1s;
-}
-.el.selected .handle{opacity:1;}
-.handle.nw{left:-4px;top:-4px;cursor:nw-resize;}
-.handle.ne{right:-4px;top:-4px;cursor:ne-resize;}
-.handle.sw{left:-4px;bottom:-4px;cursor:sw-resize;}
-.handle.se{right:-4px;bottom:-4px;cursor:se-resize;}
-.handle.n{left:50%;top:-4px;transform:translateX(-50%);cursor:n-resize;}
-.handle.s{left:50%;bottom:-4px;transform:translateX(-50%);cursor:s-resize;}
-.handle.w{left:-4px;top:50%;transform:translateY(-50%);cursor:w-resize;}
-.handle.e{right:-4px;top:50%;transform:translateY(-50%);cursor:e-resize;}
-
-/* Smart guides */
-.smart-guide{
-  position:absolute;
-  background:var(--accent3);
-  pointer-events:none;
-  z-index:1000;
-}
-
-/* Distance labels */
-.dist-label{
-  position:absolute;
-  background:var(--accent3);
-  color:#fff;
-  font-family:'Space Mono',monospace;
-  font-size:9px;
-  padding:1px 4px;
-  border-radius:2px;
-  pointer-events:none;
-  z-index:1001;
-  white-space:nowrap;
-}
-
-/* ===== PROPERTIES ===== */
-#props{
-  width:var(--props-w);
-  background:var(--surface);
-  border-left:1px solid var(--border);
-  display:flex;flex-direction:column;
-  flex-shrink:0;overflow:hidden;
-}
-
-.props-header{
-  padding:10px 12px;
-  border-bottom:1px solid var(--border);
-  font-size:11px;font-weight:600;
-  letter-spacing:.5px;color:var(--text-muted);
-  text-transform:uppercase;
-  display:flex;align-items:center;gap:6px;
-}
-
-.props-body{
-  flex:1;overflow-y:auto;padding:10px;
-}
-.props-body::-webkit-scrollbar{width:4px;}
-.props-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-
-.prop-group{margin-bottom:14px;}
-.prop-label{
-  font-size:10px;font-weight:600;letter-spacing:.6px;
-  text-transform:uppercase;color:var(--text-muted);
-  margin-bottom:6px;
-}
-
-.prop-row{display:flex;gap:6px;margin-bottom:5px;}
-.prop-field{flex:1;}
-.prop-field label{
-  display:block;font-size:10px;color:var(--text-muted);margin-bottom:3px;
-}
-.prop-field input,.prop-field select{
-  width:100%;
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  color:var(--text);
-  font-family:'Space Mono',monospace;
+  padding:6px;
   font-size:11px;
-  padding:5px 7px;
-  outline:none;
-  transition:border-color .15s;
-  -webkit-appearance:none;
-}
-.prop-field input:focus,.prop-field select:focus{border-color:var(--accent2);}
-.prop-field select{cursor:pointer;}
-
-input[type=color]{
-  height:28px;padding:2px 4px;cursor:pointer;
-}
-input[type=range]{
-  -webkit-appearance:none;height:4px;
-  background:var(--border);border-radius:2px;cursor:pointer;border:none;padding:0;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:12px;height:12px;
-  background:var(--accent2);border-radius:50%;
+  border:1px solid var(--border);
+  border-radius:6px;
 }
 
-.color-swatch{
-  width:24px;height:24px;
-  border-radius:4px;border:1px solid var(--border);
-  cursor:pointer;flex-shrink:0;align-self:flex-end;margin-bottom:0;
-}
-
-/* Font controls */
-.font-btns{display:flex;gap:3px;}
-.font-btn{
-  flex:1;height:28px;
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:4px;color:var(--text-muted);
-  cursor:pointer;font-size:12px;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .1s;
-}
-.font-btn:hover,.font-btn.active{background:var(--surface3);color:var(--accent2);border-color:var(--accent2);}
-
-/* Align btns */
-.align-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;}
-.align-btn{
-  height:28px;
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:4px;color:var(--text-muted);
-  cursor:pointer;font-size:10px;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .1s;
-}
-.align-btn:hover{background:var(--surface3);color:var(--accent);border-color:var(--accent);}
-
-/* Grid settings */
-.grid-toggle{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:8px;
-}
-.toggle{
-  position:relative;width:32px;height:18px;
-}
-.toggle input{opacity:0;width:0;height:0;}
-.toggle-slider{
-  position:absolute;inset:0;
-  background:var(--surface3);border:1px solid var(--border);
-  border-radius:10px;cursor:pointer;
-  transition:all .2s;
-}
-.toggle-slider::before{
-  content:'';position:absolute;
-  width:12px;height:12px;
-  left:2px;top:2px;
-  background:var(--text-muted);border-radius:50%;
-  transition:all .2s;
-}
-.toggle input:checked + .toggle-slider{background:var(--accent2);border-color:var(--accent2);}
-.toggle input:checked + .toggle-slider::before{transform:translateX(14px);background:#fff;}
-
-/* Tooltip */
-[data-tip]{position:relative;}
-[data-tip]:hover::after{
-  content:attr(data-tip);
-  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
-  background:#000;color:#fff;
-  font-size:10px;padding:3px 7px;border-radius:4px;
-  white-space:nowrap;pointer-events:none;z-index:999;
-  font-family:'DM Sans',sans-serif;
-}
-
-/* Toast */
-#toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);
-  background:var(--surface3);border:1px solid var(--border);
-  color:var(--text);padding:8px 16px;border-radius:var(--radius);
-  font-size:12px;z-index:9999;
-  opacity:0;transition:all .25s;pointer-events:none;
-  font-family:'Space Mono',monospace;
-}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* Status bar */
-#statusbar{
-  height:24px;background:var(--surface);border-top:1px solid var(--border);
-  display:flex;align-items:center;padding:0 12px;gap:16px;
-  font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);
-  flex-shrink:0;
-}
-
-/* Drag selection rect */
-#sel-rect{
-  position:absolute;
-  border:1px solid var(--accent2);
-  background:rgba(129,140,248,.06);
-  pointer-events:none;display:none;
-  z-index:500;
-}
-
-/* Context menu */
-#ctx-menu{
-  position:fixed;
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:4px;min-width:160px;
-  z-index:9000;display:none;
-  box-shadow:0 8px 32px rgba(0,0,0,.5);
-}
-.ctx-item{
-  padding:7px 10px;border-radius:4px;
-  font-size:12px;cursor:pointer;
-  display:flex;align-items:center;gap:8px;
-  color:var(--text);transition:background .1s;
-}
-.ctx-item:hover{background:var(--surface3);}
-.ctx-sep{height:1px;background:var(--border);margin:3px 0;}
-.ctx-shortcut{margin-left:auto;font-size:10px;color:var(--text-muted);font-family:'Space Mono',monospace;}
-
-/* Responsive: hide panels on small screens */
-@media(max-width:900px){
-  #props{display:none;}
-  #sidebar{width:200px;}
-  :root{--sidebar-w:200px;}
-}
-@media(max-width:600px){
-  #sidebar{width:48px;}
-  .sidebar-tab{font-size:0;padding:12px 4px;}
-  .sidebar-tab svg{display:block;}
-  .sidebar-panel .panel-section .btn span{display:none;}
-  :root{--sidebar-w:48px;}
+/* AUTO LAYOUT BUTTON */
+.btn-auto{
+  background:#111;color:#fff;
+  border:none;border-radius:8px;
+  padding:8px 10px;
+  font-size:12px;
+  cursor:pointer;
 }
 </style>
 </head>
 <body>
 
-<!-- TOOLBAR -->
-<div id="toolbar">
+<!-- ADD AUTO LAYOUT BUTTON -->
+<header>
   <div class="logo">
-    <div class="logo-icon">GF</div>
-    GridFlow
+    <div class="logo-box"><span></span><span></span><span></span><span></span></div>
+    Grid Design
   </div>
-  <div class="tb-sep"></div>
-
-  <div class="tb-group" id="tool-group">
-    <button class="tb-btn active" id="tool-select" onclick="setTool('select')" data-tip="Select (V)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-7 1-4 6L5 3z"/></svg>
-    </button>
-    <button class="tb-btn" id="tool-rect" onclick="setTool('rect')" data-tip="Rectangle (R)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-    </button>
-    <button class="tb-btn" id="tool-text" onclick="setTool('text')" data-tip="Text (T)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
-    </button>
-    <button class="tb-btn" id="tool-img" onclick="setTool('image')" data-tip="Image (I)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-    </button>
+  <div class="header-div"></div>
+  <div class="header-right">
+    <button class="btn-auto" onclick="autoWrap()">⚡</button>
+    <button class="btn-icon danger" onclick="resetCanvas()">↺</button>
+    <button class="btn-icon" id="btn-preview" onclick="togglePreview()">◉</button>
+    <button class="btn-primary green" onclick="exportPDF()">⬇ Export PDF</button>
   </div>
-
-  <div class="tb-sep"></div>
-
-  <button class="tb-btn" onclick="toggleGrid()" id="grid-btn" data-tip="Toggle Grid (G)">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
-    <span>Grid</span>
-  </button>
-  <button class="tb-btn" onclick="toggleRuler()" id="ruler-btn" data-tip="Rulers">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="1"/><path d="M7 6v3M12 6v5M17 6v3"/></svg>
-    <span>Ruler</span>
-  </button>
-  <button class="tb-btn" onclick="toggleSnap()" id="snap-btn" data-tip="Snap to Grid">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
-    <span>Snap</span>
-  </button>
-
-  <div class="tb-sep"></div>
-  <button class="tb-btn" onclick="undo()" data-tip="Undo (Ctrl+Z)">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M3 13C5 8 10 5 16 7s8 9 4 14-11 6-15 2"/></svg>
-  </button>
-  <button class="tb-btn" onclick="redo()" data-tip="Redo (Ctrl+Y)">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M21 13C19 8 14 5 8 7S0 16 4 21s11 6 15 2"/></svg>
-  </button>
-
-  <div class="spacer"></div>
-
-  <div class="zoom-ctrl">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="range" id="zoom-slider" min="25" max="300" value="100" oninput="setZoom(this.value/100)">
-    <span id="zoom-label">100%</span>
-  </div>
-  <div class="tb-sep"></div>
-  <button class="tb-btn primary" onclick="exportAll()">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    Export
-  </button>
-</div>
-
-<!-- WORKSPACE -->
-<div id="workspace">
-
-  <!-- SIDEBAR -->
-  <div id="sidebar">
-    <div class="sidebar-tabs">
-      <div class="sidebar-tab active" onclick="switchTab('add',this)">Add</div>
-      <div class="sidebar-tab" onclick="switchTab('layers',this)">Layers</div>
-      <div class="sidebar-tab" onclick="switchTab('grid',this)">Grid</div>
-    </div>
-
-    <!-- ADD TAB -->
-    <div class="sidebar-panel" id="tab-add">
-      <div class="panel-section">
-        <div class="section-label">Artboards</div>
-        <div class="preset-grid">
-          <div class="preset-btn" onclick="addArtboard(1080,1350)">
-            <span class="preset-name">Instagram</span>1080×1350
-          </div>
-          <div class="preset-btn" onclick="addArtboard(1080,1080)">
-            <span class="preset-name">Square</span>1080×1080
-          </div>
-          <div class="preset-btn" onclick="addArtboard(1920,1080)">
-            <span class="preset-name">Desktop</span>1920×1080
-          </div>
-          <div class="preset-btn" onclick="addArtboard(390,844)">
-            <span class="preset-name">iPhone 14</span>390×844
-          </div>
-          <div class="preset-btn" onclick="addArtboard(1280,800)">
-            <span class="preset-name">Tablet</span>1280×800
-          </div>
-          <div class="preset-btn" onclick="addArtboard(1200,628)">
-            <span class="preset-name">OG Image</span>1200×628
-          </div>
-          <div class="preset-btn" onclick="addArtboard(2560,1440)">
-            <span class="preset-name">2K Screen</span>2560×1440
-          </div>
-          <div class="preset-btn" onclick="showCustomArtboard()">
-            <span class="preset-name">Custom</span>W × H
-          </div>
-        </div>
-        <div id="custom-ab-row" style="display:none;margin-top:6px;display:none">
-          <div class="prop-row">
-            <div class="prop-field"><label>Width</label><input type="number" id="cab-w" value="800" min="100"></div>
-            <div class="prop-field"><label>Height</label><input type="number" id="cab-h" value="600" min="100"></div>
-          </div>
-          <button class="btn primary" onclick="addCustomArtboard()" style="margin-top:4px">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            <span>Add Artboard</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="panel-section">
-        <div class="section-label">Elements</div>
-        <button class="btn" onclick="addRect()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-          <span>Rectangle</span>
-        </button>
-        <button class="btn" onclick="addTextEl()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
-          <span>Text</span>
-        </button>
-        <button class="btn" onclick="uploadImage()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <span>Image</span>
-        </button>
-        <button class="btn" onclick="addFrame()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
-          <span>Frame / Container</span>
-        </button>
-      </div>
-
-      <div class="panel-section">
-        <div class="section-label">Arrange</div>
-        <button class="btn" onclick="groupSelected()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-          <span>Group (Ctrl+G)</span>
-        </button>
-        <button class="btn" onclick="bringFront()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3H7L3 7v10l4 4h10l4-4V7z"/><path d="M12 8v8M8 12h8"/></svg>
-          <span>Bring to Front</span>
-        </button>
-        <button class="btn" onclick="sendBack()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21H7l-4-4V7l4-4h10l4 4v10z"/><path d="M12 8v8M8 12h8"/></svg>
-          <span>Send to Back</span>
-        </button>
-        <button class="btn" onclick="duplicateSelected()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          <span>Duplicate (Ctrl+D)</span>
-        </button>
-        <button class="btn" onclick="deleteSelected()" style="color:var(--danger)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-          <span>Delete (Del)</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- LAYERS TAB -->
-    <div class="sidebar-panel" id="tab-layers" style="display:none">
-      <div id="layer-list">
-        <div style="color:var(--text-muted);font-size:11px;text-align:center;padding:20px 0">No layers yet</div>
-      </div>
-    </div>
-
-    <!-- GRID TAB -->
-    <div class="sidebar-panel" id="tab-grid" style="display:none">
-      <div class="panel-section">
-        <div class="section-label">Column Grid</div>
-        <div class="grid-toggle">
-          <span style="font-size:12px">Show Columns</span>
-          <label class="toggle"><input type="checkbox" id="show-cols" checked onchange="updateGridDisplay()"><div class="toggle-slider"></div></label>
-        </div>
-        <div class="prop-row">
-          <div class="prop-field"><label>Columns</label><input type="number" id="grid-cols" value="12" min="1" max="24" oninput="updateGridDisplay()"></div>
-          <div class="prop-field"><label>Gutter (px)</label><input type="number" id="grid-gutter" value="20" min="0" oninput="updateGridDisplay()"></div>
-        </div>
-        <div class="prop-row">
-          <div class="prop-field"><label>Margin (px)</label><input type="number" id="grid-margin" value="40" min="0" oninput="updateGridDisplay()"></div>
-          <div class="prop-field"><label>Opacity</label><input type="range" id="grid-opacity" min="0" max="100" value="30" oninput="updateGridDisplay()"></div>
-        </div>
-      </div>
-
-      <div class="panel-section">
-        <div class="section-label">Baseline Grid</div>
-        <div class="grid-toggle">
-          <span style="font-size:12px">Show Baseline</span>
-          <label class="toggle"><input type="checkbox" id="show-baseline" onchange="updateGridDisplay()"><div class="toggle-slider"></div></label>
-        </div>
-        <div class="prop-row">
-          <div class="prop-field"><label>Line Height (px)</label><input type="number" id="baseline-size" value="8" min="4" max="64" oninput="updateGridDisplay()"></div>
-        </div>
-      </div>
-
-      <div class="panel-section">
-        <div class="section-label">Snap Settings</div>
-        <div class="grid-toggle">
-          <span style="font-size:12px">Snap to Grid</span>
-          <label class="toggle"><input type="checkbox" id="snap-grid" checked><div class="toggle-slider"></div></label>
-        </div>
-        <div class="grid-toggle">
-          <span style="font-size:12px">Snap to Elements</span>
-          <label class="toggle"><input type="checkbox" id="snap-els" checked><div class="toggle-slider"></div></label>
-        </div>
-        <div class="grid-toggle">
-          <span style="font-size:12px">Smart Guides</span>
-          <label class="toggle"><input type="checkbox" id="smart-guides" checked><div class="toggle-slider"></div></label>
-        </div>
-        <div class="prop-row">
-          <div class="prop-field"><label>Snap Threshold (px)</label><input type="number" id="snap-thresh" value="6" min="1" max="20"></div>
-        </div>
-      </div>
-
-      <div class="panel-section">
-        <div class="section-label">Ruler</div>
-        <div class="grid-toggle">
-          <span style="font-size:12px">Show Ruler</span>
-          <label class="toggle"><input type="checkbox" id="show-ruler" onchange="toggleRuler()"><div class="toggle-slider"></div></label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CANVAS -->
-  <div id="canvas-area">
-    <div id="viewport"></div>
-    <div id="sel-rect"></div>
-  </div>
-
-  <!-- PROPERTIES -->
-  <div id="props">
-    <div class="props-header">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-      Properties
-    </div>
-    <div class="props-body" id="props-body">
-      <div style="color:var(--text-muted);font-size:11px;text-align:center;padding:24px 0;line-height:1.7">
-        Select an element<br>to edit properties
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- STATUS BAR -->
-<div id="statusbar">
-  <span id="st-tool">Tool: Select</span>
-  <span id="st-zoom">Zoom: 100%</span>
-  <span id="st-sel">No selection</span>
-  <span id="st-pos"></span>
-  <span id="st-artboards">0 artboards</span>
-  <span style="margin-left:auto">GridFlow Design Studio</span>
-</div>
-
-<!-- CONTEXT MENU -->
-<div id="ctx-menu">
-  <div class="ctx-item" onclick="duplicateSelected()">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-    Duplicate <span class="ctx-shortcut">⌘D</span>
-  </div>
-  <div class="ctx-item" onclick="groupSelected()">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>
-    Group <span class="ctx-shortcut">⌘G</span>
-  </div>
-  <div class="ctx-sep"></div>
-  <div class="ctx-item" onclick="bringFront()">Bring to Front</div>
-  <div class="ctx-item" onclick="sendBack()">Send to Back</div>
-  <div class="ctx-sep"></div>
-  <div class="ctx-item" onclick="copyStyle()">Copy Style</div>
-  <div class="ctx-item" onclick="pasteStyle()">Paste Style</div>
-  <div class="ctx-sep"></div>
-  <div class="ctx-item" style="color:var(--danger)" onclick="deleteSelected()">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
-    Delete <span class="ctx-shortcut">Del</span>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div id="toast"></div>
+</header>
 
 <script>
-/* ======= STATE ======= */
-const vp = document.getElementById('viewport');
-const canvasArea = document.getElementById('canvas-area');
-const selRect = document.getElementById('sel-rect');
+/* ========= MODIFICATIONS ONLY ========= */
 
-let artboards = [];
-let elements = [];
-let selected = [];
-let currentTool = 'select';
-let zoom = 1;
-let panX = 0, panY = 0;
-let snapEnabled = true;
-let showGrid = true;
-let showRuler = false;
-let undoStack = [], redoStack = [];
-let copiedStyle = null;
-let isDragging = false, isResizing = false, isPanning = false;
-let dragStart = {x:0,y:0};
-let elDragStart = {};
-let spaceDown = false;
-let artboardCount = 0;
-let elCount = 0;
+/* 1. GRID RED + ALWAYS VISIBLE */
+function drawGridLines(){
+  const cvs=document.getElementById('grid-lines-canvas');
+  if(!cvs) return;
+  cvs.width=canvasW; cvs.height=canvasH;
+  const ctx=cvs.getContext('2d');
+  ctx.clearRect(0,0,canvasW,canvasH);
 
-/* ======= INIT ======= */
-addArtboard(1080, 1350);
-setZoom(0.6);
-centerViewport();
+  const cells=computeCells();
 
-/* ======= ARTBOARD ======= */
-function addArtboard(w, h, name) {
-  w = w||1080; h = h||1350;
-  name = name || ('Artboard '+(++artboardCount));
+  ctx.lineWidth=1;
+  ctx.strokeStyle='red';
+  ctx.setLineDash([3,3]);
 
-  const wrap = document.createElement('div');
-  wrap.className = 'artboard';
-  wrap.dataset.w = w;
-  wrap.dataset.h = h;
-  wrap.dataset.name = name;
-  wrap.style.width = w+'px';
-  wrap.style.height = h+'px';
-  wrap.style.left = (artboards.length * (w + 100)) + 'px';
-  wrap.style.top = '60px';
+  cells.forEach(c=>{
+    ctx.strokeRect(c.x,c.y,c.w,c.h);
+  });
 
-  const label = document.createElement('div');
-  label.className = 'artboard-label';
-  label.textContent = name+' — '+w+'×'+h;
-  wrap.appendChild(label);
-
-  const gridOv = document.createElement('div');
-  gridOv.className = 'grid-overlay';
-  gridOv.dataset.role = 'grid';
-  wrap.appendChild(gridOv);
-  drawColGrid(gridOv, w, h);
-
-  vp.appendChild(wrap);
-  artboards.push(wrap);
-  updateStatus();
-  updateLayerList();
-  pushUndo();
-  return wrap;
+  ctx.setLineDash([]);
 }
 
-function showCustomArtboard() {
-  const el = document.getElementById('custom-ab-row');
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-function addCustomArtboard() {
-  const w = parseInt(document.getElementById('cab-w').value)||800;
-  const h = parseInt(document.getElementById('cab-h').value)||600;
-  addArtboard(w, h);
-  document.getElementById('custom-ab-row').style.display = 'none';
-  toast('Custom artboard added: '+w+'×'+h);
-}
+/* 2. PREVENT ELEMENT SHIFT */
+function placeEl(type,x,y){
+  const def=EL_DEF[type];
+  const ew=Math.round(canvasW*def.fw);
+  const eh=Math.round(canvasH*def.fh);
 
-/* ======= GRID DRAWING ======= */
-function drawColGrid(container, w, h) {
-  container.innerHTML = '';
-  const showCols = document.getElementById('show-cols').checked;
-  const showBase = document.getElementById('show-baseline').checked;
-  const cols = parseInt(document.getElementById('grid-cols').value)||12;
-  const gutter = parseInt(document.getElementById('grid-gutter').value)||20;
-  const margin = parseInt(document.getElementById('grid-margin').value)||40;
-  const opacity = parseInt(document.getElementById('grid-opacity').value)/100;
-  const baseSize = parseInt(document.getElementById('baseline-size').value)||8;
+  let s=strictSnap(x,y,ew,eh);
 
-  container.style.opacity = opacity;
-
-  if (showCols) {
-    const totalGutters = (cols-1)*gutter;
-    const colW = (w - margin*2 - totalGutters) / cols;
-    for (let i=0;i<cols;i++) {
-      const x = margin + i*(colW+gutter);
-      const col = document.createElement('div');
-      col.className = 'col-guide';
-      col.style.left = x+'px';
-      col.style.width = colW+'px';
-      container.appendChild(col);
+  // SMART PLACEMENT
+  const cells=computeCells();
+  for(let c of cells){
+    const occupied=elements.some(e=>
+      c.x<e.x+e.w && c.x+c.w>e.x &&
+      c.y<e.y+e.h && c.y+c.h>e.y
+    );
+    if(!occupied){
+      s={x:c.x,y:c.y,w:c.w,h:c.h};
+      break;
     }
   }
 
-  if (showBase) {
-    for (let y=0;y<h;y+=baseSize) {
-      const bl = document.createElement('div');
-      bl.className = 'baseline';
-      bl.style.top = y+'px';
-      container.appendChild(bl);
-    }
-  }
-}
-
-function updateGridDisplay() {
-  artboards.forEach(ab => {
-    const g = ab.querySelector('[data-role="grid"]');
-    if (g) drawColGrid(g, parseInt(ab.dataset.w), parseInt(ab.dataset.h));
-    g.style.display = showGrid ? 'block' : 'none';
-  });
-}
-
-function toggleGrid() {
-  showGrid = !showGrid;
-  document.getElementById('grid-btn').classList.toggle('active', showGrid);
-  document.querySelectorAll('[data-role="grid"]').forEach(g => {
-    g.style.display = showGrid ? 'block' : 'none';
-  });
-}
-
-/* ======= TOOLS ======= */
-function setTool(t) {
-  currentTool = t;
-  document.querySelectorAll('.tb-group .tb-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tool-'+t)?.classList.add('active');
-  canvasArea.style.cursor = t === 'select' ? 'default' : 'crosshair';
-  document.getElementById('st-tool').textContent = 'Tool: '+t.charAt(0).toUpperCase()+t.slice(1);
-}
-
-/* ======= ELEMENTS ======= */
-function getTargetArtboard() {
-  return artboards[0] || null;
-}
-
-function addRect() {
-  const ab = getTargetArtboard();
-  if (!ab) { toast('Add an artboard first'); return; }
-  const el = createElement(ab, 'rect', 40, 40, 200, 120);
-  el.querySelector('.el-content').style.background = '#e5e7eb';
-  pushUndo(); updateLayerList();
-  toast('Rectangle added');
-  selectEl(el);
-}
-
-function addTextEl() {
-  const ab = getTargetArtboard();
-  if (!ab) { toast('Add an artboard first'); return; }
-  const el = createElement(ab, 'text', 40, 40, 220, 80);
-  el.querySelector('.el-content').textContent = 'Text';
-  el.querySelector('.el-content').style.fontSize = '24px';
-  el.querySelector('.el-content').style.fontFamily = 'DM Sans, sans-serif';
-  pushUndo(); updateLayerList();
-  toast('Text added');
-  selectEl(el);
-}
-
-function addFrame() {
-  const ab = getTargetArtboard();
-  if (!ab) { toast('Add an artboard first'); return; }
-  const el = createElement(ab, 'frame', 40, 40, 300, 200);
-  el.querySelector('.el-content').style.border = '2px dashed #94a3b8';
-  el.querySelector('.el-content').style.background = 'rgba(148,163,184,.08)';
-  pushUndo(); updateLayerList();
-  toast('Frame added');
-  selectEl(el);
-}
-
-function uploadImage() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    const ab = getTargetArtboard();
-    if (!ab) { toast('Add an artboard first'); return; }
-    const el = createElement(ab, 'image', 40, 40, 240, 160);
-    const content = el.querySelector('.el-content');
-    content.style.background = `url(${url}) center/cover no-repeat`;
-    content.style.padding = '0';
-    content.contentEditable = 'false';
-    pushUndo(); updateLayerList();
-    toast('Image added: '+file.name);
-    selectEl(el);
+  const el={
+    id:++eid,type,content:def.content,
+    x:s.x,y:s.y,w:s.w,h:s.h,
+    fontSize:14,
+    align:'center'
   };
-  input.click();
-}
 
-function createElement(artboard, type, x, y, w, h) {
-  const el = document.createElement('div');
-  el.className = 'el';
-  el.dataset.type = type;
-  el.dataset.id = 'el-'+(++elCount);
-  el.style.left = x+'px';
-  el.style.top = y+'px';
-  el.style.width = w+'px';
-  el.style.height = h+'px';
-  el.style.zIndex = elements.length + 2;
-
-  const content = document.createElement('div');
-  content.className = 'el-content';
-  content.contentEditable = type === 'text' ? 'true' : 'false';
-  if (type === 'text') {
-    content.style.cursor = 'text';
-    content.addEventListener('dblclick', e => { e.stopPropagation(); content.focus(); });
-  }
-  el.appendChild(content);
-
-  // Handles
-  ['nw','n','ne','w','e','sw','s','se'].forEach(dir => {
-    const h = document.createElement('div');
-    h.className = 'handle '+dir;
-    h.dataset.dir = dir;
-    el.appendChild(h);
-    initResizeHandle(el, h, dir);
-  });
-
-  initDrag(el);
-  initSelect(el);
-  artboard.appendChild(el);
   elements.push(el);
-  return el;
+  selId=el.id;
+
+  renderEls();
+  showProps(el);
+  genCode();
 }
 
-/* ======= SELECT ======= */
-function initSelect(el) {
-  el.addEventListener('mousedown', e => {
-    if (e.target.classList.contains('handle')) return;
-    e.stopPropagation();
-    if (!e.shiftKey) {
-      selected.forEach(s => s.classList.remove('selected'));
-      selected = [];
-    }
-    if (!selected.includes(el)) {
-      selected.push(el);
-      el.classList.add('selected');
-    }
-    updatePropsPanel();
-    updateLayerList();
-    updateStatus();
-  });
-}
-
-function selectEl(el) {
-  selected.forEach(s => s.classList.remove('selected'));
-  selected = [el];
-  el.classList.add('selected');
-  updatePropsPanel();
-  updateLayerList();
-  updateStatus();
-}
-
-function clearSelection() {
-  selected.forEach(s => s.classList.remove('selected'));
-  selected = [];
-  updatePropsPanel();
-  updateStatus();
-}
-
-/* ======= DRAG ======= */
-function initDrag(el) {
-  el.addEventListener('mousedown', startDrag);
-
-  function startDrag(e) {
-    if (e.button !== 0) return;
-    if (e.target.classList.contains('handle')) return;
-    if (e.target.classList.contains('el-content') && el.dataset.type === 'text' && e.detail >= 2) return;
-    e.preventDefault();
-
-    isDragging = true;
-    const abRect = el.parentNode.getBoundingClientRect();
-    const ox = (e.clientX - abRect.left)/zoom - parseFloat(el.style.left);
-    const oy = (e.clientY - abRect.top)/zoom - parseFloat(el.style.top);
-
-    // Also drag all selected
-    const dragEls = selected.includes(el) ? selected : [el];
-    const starts = dragEls.map(e2 => ({
-      el:e2,
-      sx:parseFloat(e2.style.left),
-      sy:parseFloat(e2.style.top)
-    }));
-
-    function onMove(ev) {
-      const abRect2 = el.parentNode.getBoundingClientRect();
-      let nx = (ev.clientX - abRect2.left)/zoom - ox;
-      let ny = (ev.clientY - abRect2.top)/zoom - oy;
-
-      const snapG = document.getElementById('snap-grid').checked;
-      const snapE = document.getElementById('snap-els').checked;
-      const thresh = parseInt(document.getElementById('snap-thresh').value)||6;
-
-      if (snapG) {
-        nx = Math.round(nx/8)*8;
-        ny = Math.round(ny/8)*8;
-      }
-
-      const dx = nx - starts[0].sx;
-      const dy = ny - starts[0].sy;
-
-      starts.forEach(({el:e2, sx, sy}) => {
-        let ex = sx+dx, ey = sy+dy;
-
-        if (snapE && document.getElementById('smart-guides').checked) {
-          const guides = snapToElements(e2, ex, ey);
-          ex = guides.x; ey = guides.y;
-        }
-
-        e2.style.left = ex+'px';
-        e2.style.top = ey+'px';
-      });
-
-      updatePropsPanel();
-    }
-
-    function onUp() {
-      isDragging = false;
-      removeSmartGuides();
-      pushUndo();
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-    }
-
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  }
-}
-
-/* ======= SNAP TO ELEMENTS ======= */
-function snapToElements(el, x, y) {
-  const thresh = parseInt(document.getElementById('snap-thresh').value)||6;
-  const w = parseFloat(el.style.width);
-  const h = parseFloat(el.style.height);
-
-  removeSmartGuides();
-
-  let bestX = x, bestY = y;
-
-  elements.forEach(o => {
-    if (o === el || !o.parentNode) return;
-    const ox = parseFloat(o.style.left);
-    const oy = parseFloat(o.style.top);
-    const ow = parseFloat(o.style.width);
-    const oh = parseFloat(o.style.height);
-
-    // X snaps
-    const xs = [
-      {snap:ox, from:x}, {snap:ox+ow, from:x}, {snap:ox, from:x+w},
-      {snap:ox+ow, from:x+w}, {snap:ox+ow/2-w/2, from:x}
-    ];
-    xs.forEach(({snap,from}) => {
-      if (Math.abs(snap-from) < thresh) {
-        bestX = snap - (from-x);
-        addGuide(snap/zoom, 0, 1, 2000, 'v');
-      }
-    });
-
-    // Y snaps
-    const ys = [
-      {snap:oy, from:y}, {snap:oy+oh, from:y}, {snap:oy, from:y+h},
-      {snap:oy+oh, from:y+h}, {snap:oy+oh/2-h/2, from:y}
-    ];
-    ys.forEach(({snap,from}) => {
-      if (Math.abs(snap-from) < thresh) {
-        bestY = snap - (from-y);
-        addGuide(0, snap/zoom, 2000, 1, 'h');
-      }
-    });
-  });
-
-  return {x:bestX, y:bestY};
-}
-
-function addGuide(x, y, w, h, type) {
-  const g = document.createElement('div');
-  g.className = 'smart-guide';
-  g.dataset.guide = true;
-  if (type === 'v') {
-    g.style.left = x+'px'; g.style.top='0'; g.style.width='1px'; g.style.height='100%';
-  } else {
-    g.style.left='0'; g.style.top=y+'px'; g.style.width='100%'; g.style.height='1px';
-  }
-  vp.appendChild(g);
-}
-
-function removeSmartGuides() {
-  vp.querySelectorAll('[data-guide]').forEach(g => g.remove());
-}
-
-/* ======= RESIZE HANDLE ======= */
-function initResizeHandle(el, handle, dir) {
-  handle.addEventListener('mousedown', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    isResizing = true;
-
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const startL = parseFloat(el.style.left);
-    const startT = parseFloat(el.style.top);
-    const startW = parseFloat(el.style.width);
-    const startH = parseFloat(el.style.height);
-
-    function onMove(ev) {
-      const dx = (ev.clientX - startX)/zoom;
-      const dy = (ev.clientY - startY)/zoom;
-      const snap = document.getElementById('snap-grid').checked;
-      const snapFn = v => snap ? Math.round(v/8)*8 : v;
-
-      let nl = startL, nt = startT, nw = startW, nh = startH;
-
-      if (dir.includes('e')) nw = snapFn(startW + dx);
-      if (dir.includes('s')) nh = snapFn(startH + dy);
-      if (dir.includes('w')) { nw = snapFn(startW - dx); nl = snapFn(startL + dx); }
-      if (dir.includes('n')) { nh = snapFn(startH - dy); nt = snapFn(startT + dy); }
-
-      if (nw < 20) { nw=20; if(dir.includes('w')) nl=startL+startW-20; }
-      if (nh < 20) { nh=20; if(dir.includes('n')) nt=startT+startH-20; }
-
-      el.style.left = nl+'px';
-      el.style.top = nt+'px';
-      el.style.width = nw+'px';
-      el.style.height = nh+'px';
-      updatePropsPanel();
-    }
-
-    function onUp() {
-      isResizing = false;
-      pushUndo();
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-    }
-
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  });
-}
-
-/* ======= CANVAS MOUSE ======= */
-// Draw tool
-canvasArea.addEventListener('mousedown', e => {
-  if (spaceDown) return startPan(e);
-  if (currentTool !== 'select') return startDraw(e);
-
-  // Deselect
-  if (e.target === canvasArea || e.target === vp) {
-    clearSelection();
-    startSelRect(e);
-  }
-});
-
-function startDraw(e) {
-  const ab = artboards[0];
-  if (!ab) return;
-  const abRect = ab.getBoundingClientRect();
-  const startX = (e.clientX - abRect.left)/zoom;
-  const startY = (e.clientY - abRect.top)/zoom;
-
-  let el = null;
-
-  function onMove(ev) {
-    const x = (ev.clientX - abRect.left)/zoom;
-    const y = (ev.clientY - abRect.top)/zoom;
-    const w = Math.abs(x-startX);
-    const h = Math.abs(y-startY);
-    const lx = Math.min(x,startX);
-    const ly = Math.min(y,startY);
-
-    if (!el && (w>4||h>4)) {
-      if (currentTool==='rect') {
-        el = createElement(ab, 'rect', lx, ly, w||20, h||20);
-        el.querySelector('.el-content').style.background='#e5e7eb';
-      } else if (currentTool==='text') {
-        el = createElement(ab, 'text', lx, ly, w||120, h||40);
-        el.querySelector('.el-content').textContent='Text';
-        el.querySelector('.el-content').style.fontSize='24px';
-      }
-    } else if (el) {
-      el.style.left = lx+'px';
-      el.style.top = ly+'px';
-      el.style.width = Math.max(20,w)+'px';
-      el.style.height = Math.max(20,h)+'px';
-    }
-  }
-
-  function onUp() {
-    if (el) { selectEl(el); pushUndo(); updateLayerList(); }
-    setTool('select');
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-  }
-
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
-}
-
-// Drag-select rect
-function startSelRect(e) {
-  const startX = e.clientX;
-  const startY = e.clientY;
-
-  function onMove(ev) {
-    const x = Math.min(startX, ev.clientX);
-    const y = Math.min(startY, ev.clientY);
-    const w = Math.abs(ev.clientX - startX);
-    const h = Math.abs(ev.clientY - startY);
-    selRect.style.display = 'block';
-    selRect.style.left = x+'px';
-    selRect.style.top = y+'px';
-    selRect.style.width = w+'px';
-    selRect.style.height = h+'px';
-  }
-
-  function onUp(ev) {
-    selRect.style.display = 'none';
-    const r = selRect.getBoundingClientRect();
-    selected.forEach(s => s.classList.remove('selected'));
-    selected = elements.filter(el => {
-      const er = el.getBoundingClientRect();
-      return er.left < r.right && er.right > r.left && er.top < r.bottom && er.bottom > r.top;
-    });
-    selected.forEach(s => s.classList.add('selected'));
-    updatePropsPanel(); updateStatus();
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-  }
-
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
-}
-
-/* ======= PANNING ======= */
-function startPan(e) {
-  isPanning = true;
-  const startX = e.clientX - panX;
-  const startY = e.clientY - panY;
-  canvasArea.style.cursor = 'grabbing';
-
-  function onMove(ev) {
-    panX = ev.clientX - startX;
-    panY = ev.clientY - startY;
-    vp.style.left = panX+'px';
-    vp.style.top = panY+'px';
-  }
-
-  function onUp() {
-    isPanning = false;
-    canvasArea.style.cursor = spaceDown ? 'grab' : 'default';
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-  }
-
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
-}
-
-/* ======= ZOOM ======= */
-canvasArea.addEventListener('wheel', e => {
-  e.preventDefault();
-  const delta = e.deltaY * -0.001;
-  const newZoom = Math.max(0.1, Math.min(4, zoom + delta));
-  setZoom(newZoom);
-}, {passive:false});
-
-function setZoom(z) {
-  zoom = parseFloat(z);
-  vp.style.transform = `scale(${zoom})`;
-  document.getElementById('zoom-slider').value = Math.round(zoom*100);
-  document.getElementById('zoom-label').textContent = Math.round(zoom*100)+'%';
-  document.getElementById('st-zoom').textContent = 'Zoom: '+Math.round(zoom*100)+'%';
-}
-
-function centerViewport() {
-  const rect = canvasArea.getBoundingClientRect();
-  panX = (rect.width / 2) - (540 * zoom);
-  panY = 40;
-  vp.style.left = panX+'px';
-  vp.style.top = panY+'px';
-}
-
-/* ======= KEYBOARD ======= */
-document.addEventListener('keydown', e => {
-  if (e.code === 'Space' && !e.target.isContentEditable) {
-    spaceDown = true;
-    canvasArea.style.cursor = 'grab';
-    e.preventDefault();
-  }
-  if (e.key === 'v' || e.key === 'V') if (!e.target.isContentEditable) setTool('select');
-  if (e.key === 'r' || e.key === 'R') if (!e.target.isContentEditable) setTool('rect');
-  if (e.key === 't' || e.key === 'T') if (!e.target.isContentEditable) setTool('text');
-  if (e.key === 'i' || e.key === 'I') if (!e.target.isContentEditable) setTool('image');
-  if (e.key === 'g' || e.key === 'G') if (!e.target.isContentEditable) toggleGrid();
-
-  if (e.key === 'Delete' || e.key === 'Backspace') {
-    if (!e.target.isContentEditable) { deleteSelected(); e.preventDefault(); }
-  }
-
-  if ((e.ctrlKey||e.metaKey) && e.key === 'z') { undo(); e.preventDefault(); }
-  if ((e.ctrlKey||e.metaKey) && (e.key === 'y' || e.key === 'Z')) { redo(); e.preventDefault(); }
-  if ((e.ctrlKey||e.metaKey) && e.key === 'd') { duplicateSelected(); e.preventDefault(); }
-  if ((e.ctrlKey||e.metaKey) && e.key === 'g') { groupSelected(); e.preventDefault(); }
-  if ((e.ctrlKey||e.metaKey) && e.key === 'a') { selectAll(); e.preventDefault(); }
-
-  // Arrow nudge
-  if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key) && selected.length) {
-    if (e.target.isContentEditable) return;
-    const step = e.shiftKey ? 8 : 1;
-    selected.forEach(el => {
-      let l = parseFloat(el.style.left), t = parseFloat(el.style.top);
-      if (e.key==='ArrowLeft') l -= step;
-      if (e.key==='ArrowRight') l += step;
-      if (e.key==='ArrowUp') t -= step;
-      if (e.key==='ArrowDown') t += step;
-      el.style.left = l+'px';
-      el.style.top = t+'px';
-    });
-    updatePropsPanel();
-    e.preventDefault();
-  }
-});
-
-document.addEventListener('keyup', e => {
-  if (e.code === 'Space') {
-    spaceDown = false;
-    canvasArea.style.cursor = 'default';
-  }
-});
-
-/* ======= CONTEXT MENU ======= */
-canvasArea.addEventListener('contextmenu', e => {
-  e.preventDefault();
-  const menu = document.getElementById('ctx-menu');
-  menu.style.display = 'block';
-  menu.style.left = e.clientX+'px';
-  menu.style.top = e.clientY+'px';
-});
-
-document.addEventListener('click', () => {
-  document.getElementById('ctx-menu').style.display = 'none';
-});
-
-/* ======= PROPERTIES PANEL ======= */
-function updatePropsPanel() {
-  const body = document.getElementById('props-body');
-  if (!selected.length) {
-    body.innerHTML = `<div style="color:var(--text-muted);font-size:11px;text-align:center;padding:24px 0;line-height:1.7">Select an element<br>to edit properties</div>`;
-    return;
-  }
-
-  const el = selected[0];
-  const content = el.querySelector('.el-content');
-  const isText = el.dataset.type === 'text';
-
-  const l = parseFloat(el.style.left)||0;
-  const t = parseFloat(el.style.top)||0;
-  const w = parseFloat(el.style.width)||0;
-  const h = parseFloat(el.style.height)||0;
-  const bg = content?.style.background||'#ffffff';
-  const fs = parseInt(content?.style.fontSize)||16;
-  const fc = content?.style.color||'#000000';
-  const op = parseFloat(el.style.opacity||1)*100;
-  const r = parseInt(el.style.borderRadius)||0;
-  const zi = el.style.zIndex||'auto';
-  const fw = content?.style.fontWeight||'400';
-
-  body.innerHTML = `
-  <div class="prop-group">
-    <div class="prop-label">Transform</div>
-    <div class="prop-row">
-      <div class="prop-field"><label>X</label><input type="number" value="${Math.round(l)}" onchange="setProp('left',this.value+'px')"></div>
-      <div class="prop-field"><label>Y</label><input type="number" value="${Math.round(t)}" onchange="setProp('top',this.value+'px')"></div>
+/* 3. TYPOGRAPHY CONTROL */
+function showProps(el){
+  const form=document.getElementById('props-form');
+  if(!el){form.style.display='none';return;}
+
+  form.style.display='block';
+
+  let html=`
+    <div class="pr">
+      <div class="pr-label">Content</div>
+      <input class="pr-inp" id="pr-content" value="${el.content}" oninput="updContent()">
     </div>
-    <div class="prop-row">
-      <div class="prop-field"><label>W</label><input type="number" value="${Math.round(w)}" onchange="setProp('width',this.value+'px')"></div>
-      <div class="prop-field"><label>H</label><input type="number" value="${Math.round(h)}" onchange="setProp('height',this.value+'px')"></div>
-    </div>
-  </div>
 
-  <div class="prop-group">
-    <div class="prop-label">Appearance</div>
-    <div class="prop-row">
-      <div class="prop-field"><label>Fill</label><input type="color" value="${rgbToHex(content?.style.backgroundColor||'#ffffff')}" onchange="setContentProp('backgroundColor',this.value)"></div>
-      <div class="prop-field"><label>Opacity %</label><input type="number" value="${Math.round(op)}" min="0" max="100" onchange="setProp('opacity',this.value/100)"></div>
+    <div class="typo-row">
+      <input type="number" value="${el.fontSize||14}" onchange="updFont(this.value)">
+      <select onchange="updAlign(this.value)">
+        <option ${el.align==='left'?'selected':''}>left</option>
+        <option ${el.align==='center'?'selected':''}>center</option>
+        <option ${el.align==='right'?'selected':''}>right</option>
+      </select>
     </div>
-    <div class="prop-row">
-      <div class="prop-field"><label>Border Radius</label><input type="number" value="${r}" min="0" onchange="setProp('borderRadius',this.value+'px')"></div>
-      <div class="prop-field"><label>Z-Index</label><input type="number" value="${zi}" onchange="setProp('zIndex',this.value)"></div>
-    </div>
-    <div class="prop-row">
-      <div class="prop-field"><label>Border Color</label><input type="color" value="${rgbToHex(el.style.borderColor||'#000000')}" onchange="setProp('borderColor',this.value)"></div>
-      <div class="prop-field"><label>Border Width</label><input type="number" value="${parseInt(el.style.borderWidth)||1}" min="0" onchange="setProp('borderWidth',this.value+'px')"></div>
-    </div>
-  </div>
-
-  ${isText ? `
-  <div class="prop-group">
-    <div class="prop-label">Typography</div>
-    <div class="prop-row">
-      <div class="prop-field"><label>Font Size</label><input type="number" value="${fs}" min="8" onchange="setContentProp('fontSize',this.value+'px')"></div>
-      <div class="prop-field"><label>Color</label><input type="color" value="${rgbToHex(fc)}" onchange="setContentProp('color',this.value)"></div>
-    </div>
-    <div class="prop-row">
-      <div class="prop-field" style="flex:2">
-        <label>Font Family</label>
-        <select onchange="setContentProp('fontFamily',this.value)">
-          ${['DM Sans','Space Mono','Georgia','Times New Roman','Arial','Helvetica','Courier New','system-ui'].map(f=>`<option value="${f}" ${content?.style.fontFamily===f?'selected':''}>${f}</option>`).join('')}
-        </select>
-      </div>
-    </div>
-    <div class="prop-row">
-      <div class="prop-field"><label>Line Height</label><input type="number" value="${parseFloat(content?.style.lineHeight)||1.5}" min="0.5" max="5" step="0.1" onchange="setContentProp('lineHeight',this.value)"></div>
-      <div class="prop-field"><label>Letter Spacing</label><input type="number" value="${parseFloat(content?.style.letterSpacing)||0}" step="0.5" onchange="setContentProp('letterSpacing',this.value+'px')"></div>
-    </div>
-    <div class="prop-row">
-      <div class="prop-field" style="flex:2">
-        <label>Text Align</label>
-        <div class="font-btns">
-          <button class="font-btn ${content?.style.textAlign==='left'?'active':''}" onclick="setContentProp('textAlign','left')">L</button>
-          <button class="font-btn ${content?.style.textAlign==='center'?'active':''}" onclick="setContentProp('textAlign','center')">C</button>
-          <button class="font-btn ${content?.style.textAlign==='right'?'active':''}" onclick="setContentProp('textAlign','right')">R</button>
-          <button class="font-btn ${fw==='700'?'active':''}" onclick="setContentProp('fontWeight',content.style.fontWeight==='700'?'400':'700')" style="font-weight:700">B</button>
-          <button class="font-btn ${content?.style.fontStyle==='italic'?'active':''}" onclick="setContentProp('fontStyle',content.style.fontStyle==='italic'?'normal':'italic')" style="font-style:italic">I</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  ` : ''}
-
-  <div class="prop-group">
-    <div class="prop-label">Align</div>
-    <div class="align-grid">
-      <button class="align-btn" onclick="alignEls('left')" title="Left">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="4" x2="4" y2="20"/><rect x="4" y="7" width="8" height="4"/><rect x="4" y="13" width="14" height="4"/></svg>
-      </button>
-      <button class="align-btn" onclick="alignEls('centerH')" title="Center H">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="4" x2="12" y2="20"/><rect x="6" y="7" width="12" height="4"/><rect x="8" y="13" width="8" height="4"/></svg>
-      </button>
-      <button class="align-btn" onclick="alignEls('right')" title="Right">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="20" y1="4" x2="20" y2="20"/><rect x="12" y="7" width="8" height="4"/><rect x="6" y="13" width="14" height="4"/></svg>
-      </button>
-      <button class="align-btn" onclick="alignEls('top')" title="Top">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="4" x2="20" y2="4"/><rect x="7" y="4" width="4" height="8"/><rect x="13" y="4" width="4" height="14"/></svg>
-      </button>
-      <button class="align-btn" onclick="alignEls('centerV')" title="Center V">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><rect x="7" y="6" width="4" height="12"/><rect x="13" y="8" width="4" height="8"/></svg>
-      </button>
-      <button class="align-btn" onclick="alignEls('bottom')" title="Bottom">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="20"/><rect x="7" y="12" width="4" height="8"/><rect x="13" y="6" width="4" height="14"/></svg>
-      </button>
-    </div>
-  </div>
   `;
 
-  document.getElementById('st-sel').textContent = selected.length + ' selected';
-  document.getElementById('st-pos').textContent = `x:${Math.round(l)} y:${Math.round(t)} w:${Math.round(w)} h:${Math.round(h)}`;
+  form.innerHTML=html;
 }
 
-function setProp(prop, val) {
-  selected.forEach(el => el.style[prop] = val);
-  pushUndo();
+function updFont(v){
+  const el=elements.find(e=>e.id===selId);
+  el.fontSize=parseInt(v)||14;
+  renderEls();
 }
 
-function setContentProp(prop, val) {
-  selected.forEach(el => {
-    const c = el.querySelector('.el-content');
-    if (c) c.style[prop] = val;
+function updAlign(v){
+  const el=elements.find(e=>e.id===selId);
+  el.align=v;
+  renderEls();
+}
+
+/* APPLY TYPO STYLE */
+function renderEls(){
+  document.querySelectorAll('#canvas > .design-el').forEach(e=>e.remove());
+  const canvas=document.getElementById('canvas');
+
+  elements.forEach(el=>{
+    const div=document.createElement('div');
+    div.className='design-el';
+    div.style.left=el.x+'px';
+    div.style.top=el.y+'px';
+    div.style.width=el.w+'px';
+    div.style.height=el.h+'px';
+
+    const txt=document.createElement('div');
+    txt.className='el-prev';
+    txt.textContent=el.content;
+    txt.style.fontSize=(el.fontSize||14)+'px';
+    txt.style.textAlign=el.align||'center';
+
+    div.appendChild(txt);
+    canvas.appendChild(div);
   });
-  pushUndo();
 }
 
-/* ======= ALIGN ======= */
-function alignEls(type) {
-  if (selected.length < 1) return;
-  const ref = selected[0];
-  const rl = parseFloat(ref.style.left), rt = parseFloat(ref.style.top);
-  const rw = parseFloat(ref.style.width), rh = parseFloat(ref.style.height);
+/* 4. REMOVE TOAST LOGIC */
+function showToast(){}
 
-  selected.forEach(el => {
-    const w = parseFloat(el.style.width), h = parseFloat(el.style.height);
-    if (type==='left') el.style.left = rl+'px';
-    if (type==='right') el.style.left = (rl+rw-w)+'px';
-    if (type==='centerH') el.style.left = (rl+rw/2-w/2)+'px';
-    if (type==='top') el.style.top = rt+'px';
-    if (type==='bottom') el.style.top = (rt+rh-h)+'px';
-    if (type==='centerV') el.style.top = (rt+rh/2-h/2)+'px';
-  });
-  pushUndo();
-}
-
-/* ======= LAYER OPS ======= */
-function bringFront() {
-  selected.forEach(el => el.style.zIndex = 999);
-  pushUndo();
-}
-function sendBack() {
-  selected.forEach(el => el.style.zIndex = 0);
-  pushUndo();
-}
-function deleteSelected() {
-  selected.forEach(el => {
-    elements = elements.filter(e => e !== el);
-    el.remove();
-  });
-  selected = [];
-  updatePropsPanel(); updateLayerList(); updateStatus();
-  pushUndo();
-  toast('Deleted');
-}
-function duplicateSelected() {
-  if (!selected.length) return;
-  const newEls = [];
-  selected.forEach(el => {
-    const ab = el.parentNode;
-    const ne = createElement(ab, el.dataset.type||'rect',
-      parseFloat(el.style.left)+16,
-      parseFloat(el.style.top)+16,
-      parseFloat(el.style.width),
-      parseFloat(el.style.height)
-    );
-    // Copy styles
-    const sc = el.querySelector('.el-content');
-    const nc = ne.querySelector('.el-content');
-    if (sc && nc) nc.style.cssText = sc.style.cssText;
-    nc.textContent = sc?.textContent||'';
-    ne.style.zIndex = el.style.zIndex;
-    ne.style.borderRadius = el.style.borderRadius;
-    ne.style.opacity = el.style.opacity;
-    newEls.push(ne);
-  });
-  clearSelection();
-  newEls.forEach(e => { e.classList.add('selected'); selected.push(e); });
-  updatePropsPanel(); updateLayerList(); updateStatus();
-  pushUndo();
-  toast('Duplicated');
-}
-function groupSelected() {
-  toast('Group: hold Ctrl/Cmd to multi-select elements');
-}
-function selectAll() {
-  clearSelection();
-  elements.forEach(el => { el.classList.add('selected'); selected.push(el); });
-  updatePropsPanel(); updateStatus();
-}
-function copyStyle() {
-  if (!selected.length) return;
-  const el = selected[0];
-  const c = el.querySelector('.el-content');
-  copiedStyle = {
-    el: {
-      borderRadius: el.style.borderRadius,
-      opacity: el.style.opacity,
-      borderColor: el.style.borderColor,
-      borderWidth: el.style.borderWidth
-    },
-    content: c ? c.style.cssText : ''
-  };
-  toast('Style copied');
-}
-function pasteStyle() {
-  if (!copiedStyle || !selected.length) return;
-  selected.forEach(el => {
-    Object.assign(el.style, copiedStyle.el);
-    const c = el.querySelector('.el-content');
-    if (c && copiedStyle.content) c.style.cssText = copiedStyle.content;
-  });
-  updatePropsPanel();
-  pushUndo();
-  toast('Style pasted');
-}
-
-/* ======= LAYER LIST ======= */
-function updateLayerList() {
-  const list = document.getElementById('layer-list');
-  if (!elements.length && !artboards.length) {
-    list.innerHTML = `<div style="color:var(--text-muted);font-size:11px;text-align:center;padding:20px 0">No layers yet</div>`;
-    return;
+/* 5. FIX DOUBLE TAP */
+let lastTap=0;
+document.addEventListener('pointerdown',e=>{
+  const now=Date.now();
+  if(now-lastTap<300){
+    const el=e.target.closest('.design-el');
+    if(el){
+      selId=parseInt(el.dataset.id);
+      showProps(elements.find(x=>x.id===selId));
+    }
   }
-
-  const icons = {
-    rect: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18"/></svg>`,
-    text: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>`,
-    image: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>`,
-    frame: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>`,
-  };
-
-  list.innerHTML = [...elements].reverse().map(el => `
-    <div class="layer-item ${selected.includes(el)?'selected':''}" onclick="selectElById('${el.dataset.id}')">
-      <div class="layer-icon">${icons[el.dataset.type]||icons.rect}</div>
-      <div class="layer-name">${el.dataset.type||'Element'} ${el.dataset.id}</div>
-      <div class="layer-eye" onclick="toggleVisibility(event,'${el.dataset.id}')">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      </div>
-    </div>
-  `).join('');
-}
-
-function selectElById(id) {
-  const el = elements.find(e => e.dataset.id === id);
-  if (el) selectEl(el);
-}
-
-function toggleVisibility(e, id) {
-  e.stopPropagation();
-  const el = elements.find(e2 => e2.dataset.id === id);
-  if (el) {
-    el.style.visibility = el.style.visibility === 'hidden' ? 'visible' : 'hidden';
-  }
-}
-
-/* ======= STATUS ======= */
-function updateStatus() {
-  document.getElementById('st-artboards').textContent = artboards.length + ' artboard' + (artboards.length!==1?'s':'');
-  document.getElementById('st-sel').textContent = selected.length ? selected.length + ' selected' : 'No selection';
-}
-
-/* ======= SIDEBAR TABS ======= */
-function switchTab(tab, btn) {
-  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  ['tab-add','tab-layers','tab-grid'].forEach(id => {
-    document.getElementById(id).style.display = id === 'tab-'+tab ? 'block' : 'none';
-  });
-}
-
-/* ======= RULER ======= */
-function toggleRuler() {
-  showRuler = !showRuler;
-  document.getElementById('ruler-btn').classList.toggle('active', showRuler);
-  document.getElementById('show-ruler').checked = showRuler;
-  // Simple ruler indicator
-  toast(showRuler ? 'Ruler on' : 'Ruler off');
-}
-
-/* ======= SNAP TOGGLE ======= */
-function toggleSnap() {
-  const btn = document.getElementById('snap-btn');
-  const snapG = document.getElementById('snap-grid');
-  snapG.checked = !snapG.checked;
-  btn.classList.toggle('active', snapG.checked);
-  toast(snapG.checked ? 'Snap on' : 'Snap off');
-}
-
-/* ======= UNDO/REDO ======= */
-function pushUndo() {
-  const state = vp.innerHTML;
-  undoStack.push(state);
-  if (undoStack.length > 40) undoStack.shift();
-  redoStack = [];
-}
-
-function undo() {
-  if (undoStack.length < 2) return;
-  redoStack.push(undoStack.pop());
-  const state = undoStack[undoStack.length-1];
-  restoreState(state);
-  toast('Undo');
-}
-
-function redo() {
-  if (!redoStack.length) return;
-  const state = redoStack.pop();
-  undoStack.push(state);
-  restoreState(state);
-  toast('Redo');
-}
-
-function restoreState(html) {
-  vp.innerHTML = html;
-  // Rebind
-  artboards = Array.from(vp.querySelectorAll('.artboard'));
-  elements = Array.from(vp.querySelectorAll('.el'));
-  selected = [];
-  elements.forEach(el => {
-    initSelect(el);
-    initDrag(el);
-    const handles = el.querySelectorAll('.handle');
-    handles.forEach(h => initResizeHandle(el, h, h.dataset.dir));
-  });
-  updatePropsPanel();
-  updateLayerList();
-  updateStatus();
-}
-
-/* ======= EXPORT ======= */
-function exportAll() {
-  const script = document.createElement('script');
-  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-  script.onload = () => {
-    artboards.forEach((ab, i) => {
-      // Hide grid
-      const grids = ab.querySelectorAll('[data-role="grid"]');
-      grids.forEach(g => g.style.display = 'none');
-
-      html2canvas(ab, {scale:2, useCORS:true, allowTaint:true}).then(c => {
-        grids.forEach(g => g.style.display = '');
-        const link = document.createElement('a');
-        link.download = (ab.dataset.name||'artboard_'+i)+'.png';
-        link.href = c.toDataURL('image/png');
-        link.click();
-      });
-    });
-    toast('Exporting '+ artboards.length +' artboard(s)...');
-  };
-  script.onerror = () => toast('Export failed: network error');
-  document.body.appendChild(script);
-}
-
-/* ======= TOAST ======= */
-function toast(msg, dur=2000) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._tid);
-  t._tid = setTimeout(() => t.classList.remove('show'), dur);
-}
-
-/* ======= UTIL ======= */
-function rgbToHex(rgb) {
-  if (!rgb || rgb === 'transparent' || rgb === '') return '#ffffff';
-  if (rgb.startsWith('#')) return rgb;
-  const m = rgb.match(/\d+/g);
-  if (!m || m.length < 3) return '#ffffff';
-  return '#'+[m[0],m[1],m[2]].map(v => parseInt(v).toString(16).padStart(2,'0')).join('');
-}
-
-// Track mouse position for status bar
-canvasArea.addEventListener('mousemove', e => {
-  const rect = canvasArea.getBoundingClientRect();
-  const x = Math.round((e.clientX - rect.left - panX)/zoom);
-  const y = Math.round((e.clientY - rect.top - panY)/zoom);
-  if (!selected.length) document.getElementById('st-pos').textContent = `${x}, ${y}`;
+  lastTap=now;
 });
 
-// Init undo stack
-setTimeout(pushUndo, 100);
+/* 6. COLUMN GRID SUPPORT ROWS */
+function computeCells(){
+  const cells=[];
+  const effCols=Math.max(cols,1);
+  const effRows=Math.max(rows,1);
+
+  const cellW=(canvasW-gap*(effCols+1))/effCols;
+  const cellH=(canvasH-gap*(effRows+1))/effRows;
+
+  for(let r=0;r<effRows;r++){
+    for(let c=0;c<effCols;c++){
+      cells.push({
+        x:gap+c*(cellW+gap),
+        y:gap+r*(cellH+gap),
+        w:cellW,
+        h:cellH
+      });
+    }
+  }
+  return cells;
+}
+
 </script>
 </body>
 </html>
